@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preflight</title>
+<style>
+:root{--bg:#f6f7f9;--fg:#1b2430;--mut:#667085;--line:#dde1e7;--acc:#1f5eff;--card:#fff;--g:#15803d;--y:#b45309;--r:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg)}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+header h1{font-size:18px;margin:0 8px 0 0}.chip{font-size:12px;padding:3px 9px;border-radius:99px;background:#eef1f6}
+button{font:inherit;padding:7px 13px;border:1px solid var(--line);background:var(--card);border-radius:6px;cursor:pointer}
+button.p{background:var(--acc);color:#fff;border-color:var(--acc)}button:disabled{opacity:.5}
+main{display:grid;grid-template-columns:1fr 340px;gap:20px;padding:20px;max-width:1300px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+nav{display:flex;gap:4px;margin-bottom:14px}nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+textarea,input{width:100%;font:inherit;padding:9px;border:1px solid var(--line);border-radius:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:14px}
+.verdict{color:#fff;border:0}.verdict h2{margin:0;font-size:30px}.GREEN{background:var(--g)}.YELLOW{background:var(--y)}.RED{background:var(--r)}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--r);padding:10px;border-radius:6px;margin-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.mut{color:var(--mut);font-size:13px}
+pre{white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;background:#f2f4f7;padding:8px;border-radius:6px;max-height:180px;overflow:auto}
+#mem{position:sticky;top:12px;align-self:start;max-height:90vh;overflow:auto}
+.bar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.hide{display:none}
+#cat{position:fixed;right:14px;bottom:14px;z-index:5;width:64px;height:56px;pointer-events:none;transition:transform .5s,bottom .5s,right .5s}
+#cat.clingy{bottom:74px;right:50%}#cat.running{animation:run 1.2s linear infinite}#cat.rolling{animation:roll 1s linear infinite}
+#cat.falling{transform:rotate(90deg)}#cat.digging{animation:dig .4s ease-in-out infinite}
+@keyframes run{0%{right:14px}50%{right:70vw}100%{right:14px}}@keyframes roll{to{transform:rotate(360deg)}}@keyframes dig{50%{transform:translateY(6px)}}
+#cat .z{display:none;position:absolute;top:-14px;right:-4px;font-size:12px;color:var(--mut)}#cat.asleep .z{display:block;animation:z 2s infinite}@keyframes z{to{transform:translateY(-8px);opacity:0}}
+#cat .coin{display:none;position:absolute;left:-6px;bottom:-4px;font-size:16px}#cat.digging .coin{display:block}
+@media(prefers-reduced-motion:reduce){#cat *{animation:none!important}#cat{animation:none!important}}
+</style></head><body>
+<header><h1>Preflight</h1><span class="chip" id="c1"></span><span class="chip" id="c2"></span>
+<button id="test">Test connection</button><span class="mut" id="testout"></span>
+<label style="margin-left:auto"><input type="checkbox" id="mem" checked style="width:auto"> Memory ON</label>
+<label><input type="checkbox" id="hidecat" style="width:auto"> Hide cat</label></header>
+<main><section>
+<div class="card"><b>Company history</b> <span class="mut" id="bank">Not loaded</span>
+<div class="row"><button id="seed">Load company history</button></div><div class="bar hide" id="prog"><i></i></div><div class="mut" id="progtxt"></div></div>
+<nav id="tabs" style="margin-top:14px"></nav>
+<div id="t-pre"><textarea id="plan" rows="3" placeholder="Describe what you're about to do"></textarea>
+<div class="row"><button class="ex">Friday deploy of Billing API + 3 dependency updates</button><button class="ex">Migrate Service B's DB Saturday 2 AM</button><button class="ex">Roll out a new async queue for order events</button></div>
+<button class="p" id="run">Run preflight</button><div id="out"></div></div>
+<div id="t-his" class="hide"><input id="q" placeholder="e.g. What happened with the Orders DB migration?"><div class="row"><button class="p" id="ask">Ask history</button></div><div id="hout"></div></div>
+<div id="t-pat" class="hide"><button class="p" id="pat">What mistakes are we at risk of repeating?</button><div id="pout"></div></div>
+<div id="t-fb" class="hide"><button id="fbload">Load feedback log</button><div id="fbout"></div>
+<div class="card"><b>Add experience</b><textarea id="notes" rows="4" placeholder="Paste free-text notes about what happened"></textarea><div class="row"><button id="extract">Convert to lesson record</button></div><textarea id="rec" rows="6" class="hide"></textarea><div class="row"><button class="p hide" id="retainrec">Retain record</button></div><div id="addout"></div></div></div>
+</section>
+<aside class="card" id="mem-panel" style="margin-top:0"><b>Memory panel</b><div id="memout" class="mut">Nothing recalled yet.</div></aside></main>
+<div id="cat" class="idle"><svg viewBox="0 0 64 56" width="64" height="56"><ellipse cx="32" cy="38" rx="20" ry="14" fill="#8b95a5"/><circle cx="32" cy="22" r="14" fill="#a3adbb"/><path d="M20 12l3-10 8 7zM44 12l-3-10-8 7z" fill="#a3adbb"/><g id="eyes"><circle cx="26" cy="21" r="2" fill="#1b2430"/><circle cx="38" cy="21" r="2" fill="#1b2430"/></g><path d="M30 27q2 2 4 0" stroke="#1b2430" fill="none"/></svg><span class="z">Zzz</span><span class="coin">🪙</span></div>
+<script>
+const $=id=>document.getElementById(id);let cfg={},last=null,lastPlan="",catAway=60;
+const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+async function api(p,b){const r=await fetch("/api/"+p,{method:p==="status"?"GET":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b||{})});const j=await r.json();if(!r.ok)throw new Error(j.error||r.statusText);return j}
+const err=(el,e,retry)=>{el.innerHTML=`<div class="err">${esc(e.message)} ${retry?'<button id="retry">Retry</button>':''}</div>`;if(retry)$("retry").onclick=retry};
+/* ---- cat state machine (decoration only) ---- */
+const cat={s:"idle",away:0,set(s){if($("hidecat").checked)return;this.s=s;$("cat").className=s;$("eyes").style.opacity=s==="asleep"?0:1},};
+const useCatMood=cat;$("hidecat").onchange=()=>{$("cat").style.display=$("hidecat").checked?"none":"block"};
+document.addEventListener("visibilitychange",()=>{if(document.hidden){cat.away=Date.now();cat.set("asleep")}else{const t=(Date.now()-cat.away)/1000;cat.set(t>=catAway?"clingy":"idle")}});
+["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(cat.s==="clingy"){cat.set("idle")}}));
+function catCall(){cat.set("running");const t1=setTimeout(()=>cat.set("rolling"),1200);return{search(){cat.set("digging")},done(){clearTimeout(t1);cat.set("falling");setTimeout(()=>cat.set("idle"),1200)}}}
+/* ---- status ---- */
+async function status(){cfg=await api("status");catAway=cfg.catAwayThreshold;
+$("c1").textContent=`Hindsight ${cfg.hindsightConfigured?"✓ …"+cfg.hindsightKeyTail:"✗"} · ${cfg.bankId}`;
+$("c2").textContent=`Groq ${cfg.groqConfigured?"✓ …"+cfg.groqKeyTail:"✗"}`}
+$("test").onclick=async()=>{$("testout").textContent="Testing…";try{const r=await api("test");$("testout").textContent=`OK ${r.latencyMs} ms`}catch(e){$("testout").textContent="Failed: "+e.message}};
+/* ---- tabs ---- */
+const tabs=[["pre","Preflight"],["his","Ask History"],["pat","Patterns"],["fb","Feedback log"]];
+$("tabs").innerHTML=tabs.map(([k,n])=>`<button data-k="${k}" class="${k==="pre"?"on":""}">${n}</button>`).join("");
+$("tabs").onclick=e=>{const k=e.target.dataset.k;if(!k)return;tabs.forEach(([x])=>$("t-"+x).classList.toggle("hide",x!==k));[...$("tabs").children].forEach(b=>b.classList.toggle("on",b.dataset.k===k))};
+/* ---- seed + indexing ---- */
+$("seed").onclick=async()=>{if(!confirm("Retain the Helix Freight history into the memory bank?"))return;
+$("seed").disabled=true;$("prog").classList.remove("hide");const bar=$("prog").firstChild;bar.style.width="10%";$("progtxt").textContent="Retaining lesson records…";
+try{const s=await api("seed");bar.style.width="40%";const t0=Date.now(),lim=cfg.indexingTimeout*1000;
+while(true){const r=await api("indexing");const el=Date.now()-t0;bar.style.width=Math.min(95,40+55*el/lim)+"%";$("progtxt").textContent=`Indexing… ${Math.round(el/1000)}s`;
+if(r.ready){bar.style.width="100%";$("bank").textContent=`Memory bank status: ${s.retained} records retained`;$("progtxt").textContent="Ready.";break}
+if(el>lim)throw new Error("Indexing timed out; records may still become recallable shortly.");await new Promise(r=>setTimeout(r,5000))}}
+catch(e){err($("progtxt"),e)}$("seed").disabled=false};
+/* ---- preflight ---- */
+document.querySelectorAll(".ex").forEach(b=>b.onclick=()=>{$("plan").value=b.textContent});
+function memPanel(m){if(!m){$("memout").textContent="Memory OFF: no recall performed.";return}
+$("memout").innerHTML=`<div class="mut">${m.latencyMs} ms · ${m.merged.length} unique memories</div>`+m.queries.map(q=>`<div><b>Query:</b> ${esc(q.query)}<pre>${esc(q.results.join("\n---\n")||"(none)")}</pre></div>`).join("")}
+$("run").onclick=async function go(){const plan=$("plan").value.trim();if(!plan)return;lastPlan=plan;$("out").innerHTML='<div class="card">Checking…</div>';
+const c=catCall();const memOn=$("mem").checked;if(memOn)c.search();
+try{const r=await api("preflight",{plan,memory:memOn});last=r;
+if(!r.memoryUsed){$("out").innerHTML=`<div class="card"><span class="chip">${r.label}</span><p>${esc(r.answer)}</p></div>`;memPanel(null)}
+else{const v=r.verdict;$("out").innerHTML=`<div class="card verdict ${v.verdict}"><h2>${v.verdict}</h2><p>${esc(v.summary)}</p><div class="mut" style="color:#fff">Confidence ${esc(v.confidence)} · ${esc(v.caveat)}</div></div>
+<div class="card"><b>Cited events</b>${(v.matched_lessons||[]).map(m=>`<p><b>${esc(m.event_id)}</b> ${esc(m.why_it_matches)}<br><span class="mut">Matches: ${esc((m.matching_conditions||[]).join(", "))} · Differences: ${esc(m.key_differences)}</span></p>`).join("")||"<p class='mut'>None</p>"}
+<b>Counter-evidence</b>${(v.counter_evidence||[]).map(m=>`<p><b>${esc(m.event_id)}</b> ${esc(m.note)}</p>`).join("")||"<p class='mut'>None</p>"}
+<b>Recommended actions</b><ul>${(v.recommended_actions||[]).map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
+<div class="card"><b>Did you act on this?</b><div class="row"><button data-a="We changed the plan">We changed the plan</button><button data-a="We're proceeding anyway">We're proceeding anyway</button></div><div id="fb2"></div></div>`;
+memPanel(r.memory);
+$("out").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>outcome(b.dataset.a))}}
+catch(e){err($("out"),e,go)}c.done()};
+const cited=()=>((last?.verdict?.matched_lessons)||[]).map(m=>m.event_id);
+async function outcome(action){try{await api("outcome",{plan:lastPlan,verdict:last.verdict.verdict,cited:cited(),action});
+$("fb2").innerHTML=`<p class="mut">Recorded: ${esc(action)}. Later, how did it go?</p><input id="fnote" placeholder="Note (optional)"><div class="row"><button id="ok">It went fine</button><button id="bad">It failed</button></div>`;
+const done=async res=>{try{await api("outcome",{plan:lastPlan,verdict:last.verdict.verdict,cited:cited(),action,result:res,note:$("fnote").value});$("fb2").innerHTML=`<p class="mut">Recorded result: ${res}. Future checks will use it.</p>`}catch(e){err($("fb2"),e)}};
+$("ok").onclick=()=>done("It went fine");$("bad").onclick=()=>done("It failed")}catch(e){err($("fb2"),e)}}
+/* ---- history / patterns / feedback / add ---- */
+$("ask").onclick=async function go(){const question=$("q").value.trim();if(!question)return;$("hout").innerHTML='<div class="card">Searching memory…</div>';const c=catCall();c.search();
+try{const r=await api("history",{question});$("hout").innerHTML=`<div class="card"><div style="white-space:pre-wrap">${esc(r.answer)}</div></div>`;memPanel(r.memory)}catch(e){err($("hout"),e,go)}c.done()};
+$("pat").onclick=async function go(){$("pout").innerHTML='<div class="card">Analyzing memory…</div>';const c=catCall();c.search();
+try{const r=await api("patterns");$("pout").innerHTML=`<p class="mut">Path used: ${esc(r.path)}</p>`+(r.patterns||[]).map(p=>`<div class="card"><b>${esc(p.title)}</b><div class="mut">Events: ${esc((p.event_ids||[]).join(", "))} · Failures: ${esc(p.failure_count)}</div><p>${esc(p.preventive_rule)}</p></div>`).join("");if(r.memory)memPanel(r.memory)}catch(e){err($("pout"),e,go)}c.done()};
+$("fbload").onclick=async()=>{$("fbout").innerHTML="Loading…";try{const r=await api("outcomes");$("fbout").innerHTML=r.items.map(t=>`<pre>${esc(t)}</pre>`).join("")||'<p class="mut">No outcomes recorded yet. Mark a verdict on the Preflight tab.</p>'}catch(e){err($("fbout"),e)}};
+$("extract").onclick=async()=>{try{const r=await api("extract-lesson",{notes:$("notes").value});$("rec").value=r.record;$("rec").classList.remove("hide");$("retainrec").classList.remove("hide")}catch(e){err($("addout"),e)}};
+$("retainrec").onclick=async()=>{try{await api("retain-record",{record:$("rec").value});$("addout").innerHTML='<p class="mut">Retained. It may take a moment to become recallable.</p>'}catch(e){err($("addout"),e)}};
+status();
+</script></body></html>
