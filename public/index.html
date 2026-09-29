@@ -1,106 +1,757 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Preflight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f7f9;--fg:#1b2430;--mut:#667085;--line:#dde1e7;--acc:#1f5eff;--card:#fff;--g:#15803d;--y:#b45309;--r:#b91c1c}
-*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg)}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--line)}
-header h1{font-size:18px;margin:0 8px 0 0}.chip{font-size:12px;padding:3px 9px;border-radius:99px;background:#eef1f6}
-button{font:inherit;padding:7px 13px;border:1px solid var(--line);background:var(--card);border-radius:6px;cursor:pointer}
-button.p{background:var(--acc);color:#fff;border-color:var(--acc)}button:disabled{opacity:.5}
-main{display:grid;grid-template-columns:1fr 340px;gap:20px;padding:20px;max-width:1300px;margin:auto}
+:root{--bg:#f8f9fc;--fg:#1e293b;--mut:#64748b;--line:#e2e8f0;--acc:#4f46e5;--acc-hover:#4338ca;--card:#fff;--g:#059669;--y:#d97706;--r:#dc2626;--shadow:0 1px 3px rgba(0,0,0,.08);--radius:10px}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.6 'Inter',system-ui,sans-serif;background:var(--bg);color:var(--fg)}
+
+/* Header */
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 24px;background:var(--card);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+header h1{font-size:20px;font-weight:700;margin:0 8px 0 0;background:linear-gradient(135deg,var(--acc),#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chip{font-size:12px;padding:3px 10px;border-radius:99px;background:#eef2ff;color:var(--acc);font-weight:500}
+
+/* Buttons */
+button{font:inherit;padding:8px 16px;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);cursor:pointer;transition:all .15s;font-weight:500}
+button:hover{border-color:var(--acc);color:var(--acc)}
+button.p{background:var(--acc);color:#fff;border-color:var(--acc)}
+button.p:hover{background:var(--acc-hover)}
+button:disabled{opacity:.5;pointer-events:none}
+
+/* Layout */
+main{display:grid;grid-template-columns:1fr 340px;gap:24px;padding:24px;max-width:1320px;margin:auto}
 @media(max-width:900px){main{grid-template-columns:1fr}}
-nav{display:flex;gap:4px;margin-bottom:14px}nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-textarea,input{width:100%;font:inherit;padding:9px;border:1px solid var(--line);border-radius:6px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:14px}
-.verdict{color:#fff;border:0}.verdict h2{margin:0;font-size:30px}.GREEN{background:var(--g)}.YELLOW{background:var(--y)}.RED{background:var(--r)}
-.err{background:#fef2f2;border:1px solid #fecaca;color:var(--r);padding:10px;border-radius:6px;margin-top:12px}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.mut{color:var(--mut);font-size:13px}
-pre{white-space:pre-wrap;font:12px/1.4 ui-monospace,monospace;background:#f2f4f7;padding:8px;border-radius:6px;max-height:180px;overflow:auto}
-#mem{position:sticky;top:12px;align-self:start;max-height:90vh;overflow:auto}
-.bar{height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+
+/* Tabs */
+nav{display:flex;gap:4px;margin-bottom:16px}
+nav button{border-radius:var(--radius) var(--radius) 0 0;border-bottom:2px solid transparent;font-size:14px}
+nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* Inputs */
+textarea,input{width:100%;font:inherit;padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius);transition:border .15s}
+textarea:focus,input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:14px;box-shadow:var(--shadow)}
+.verdict{color:#fff;border:0}.verdict h2{margin:0;font-size:30px}
+.GREEN{background:var(--g)}.YELLOW{background:var(--y)}.RED{background:var(--r)}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--r);padding:12px;border-radius:var(--radius);margin-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.mut{color:var(--mut);font-size:13px}
+pre{white-space:pre-wrap;font:12px/1.5 'SF Mono',ui-monospace,monospace;background:#f1f5f9;padding:10px;border-radius:var(--radius);max-height:180px;overflow:auto}
+#mem-panel{position:sticky;top:12px;align-self:start;max-height:90vh;overflow:auto}
+.bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
 .hide{display:none}
-#cat{position:fixed;right:14px;bottom:14px;z-index:5;width:64px;height:56px;pointer-events:none;transition:transform .5s,bottom .5s,right .5s}
-#cat.clingy{bottom:74px;right:50%}#cat.running{animation:run 1.2s linear infinite}#cat.rolling{animation:roll 1s linear infinite}
-#cat.falling{transform:rotate(90deg)}#cat.digging{animation:dig .4s ease-in-out infinite}
-@keyframes run{0%{right:14px}50%{right:70vw}100%{right:14px}}@keyframes roll{to{transform:rotate(360deg)}}@keyframes dig{50%{transform:translateY(6px)}}
-#cat .z{display:none;position:absolute;top:-14px;right:-4px;font-size:12px;color:var(--mut)}#cat.asleep .z{display:block;animation:z 2s infinite}@keyframes z{to{transform:translateY(-8px);opacity:0}}
-#cat .coin{display:none;position:absolute;left:-6px;bottom:-4px;font-size:16px}#cat.digging .coin{display:block}
-@media(prefers-reduced-motion:reduce){#cat *{animation:none!important}#cat{animation:none!important}}
+
+/* ---- Step flow indicator ---- */
+.flow{display:flex;align-items:center;gap:0;margin:0 0 18px;padding:14px 0;overflow-x:auto}
+.step{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:13px;font-weight:500;color:var(--mut);background:#f1f5f9;white-space:nowrap;transition:all .25s}
+.step .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e2e8f0;font-size:11px;font-weight:700;color:var(--mut);transition:all .25s}
+.step.active{color:var(--acc);background:#eef2ff}
+.step.active .num{background:var(--acc);color:#fff}
+.step.done{color:var(--g);background:#ecfdf5}
+.step.done .num{background:var(--g);color:#fff}
+.step-arrow{color:var(--line);font-size:16px;margin:0 4px;flex-shrink:0}
+
+/* ---- Quick examples ---- */
+.examples-label{font-size:12px;color:var(--mut);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
+.ex{font-size:13px;padding:6px 12px;background:#f8fafc;border:1px dashed var(--line);color:var(--mut)}
+.ex:hover{background:#eef2ff;border-color:var(--acc);color:var(--acc);border-style:solid}
+
+/* ---- Outcome buttons ---- */
+.obtn{padding:8px 16px;border-radius:var(--radius);font-weight:500;font-size:14px;transition:all .15s}
+.obtn-ok{border-color:var(--g);color:var(--g)}.obtn-ok:hover{background:var(--g);color:#fff}
+.obtn-partial{border-color:var(--y);color:var(--y)}.obtn-partial:hover{background:var(--y);color:#fff}
+.obtn-fail{border-color:var(--r);color:var(--r)}.obtn-fail:hover{background:var(--r);color:#fff}
+
+/* ---- History cards ---- */
+.history-card{display:flex;flex-direction:column;gap:6px}
+.history-header{display:flex;align-items:center;gap:10px}
+.verdict-badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.5px}
+.verdict-badge.GREEN{background:var(--g)}.verdict-badge.YELLOW{background:var(--y)}.verdict-badge.RED{background:var(--r)}
+.history-details{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+
+/* ---- Remember section ---- */
+.remember-btn{background:#faf5ff;border-color:#c084fc;color:#7c3aed}
+.remember-btn:hover{background:#7c3aed;color:#fff}
+.saved-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--radius);background:#ecfdf5;color:var(--g);font-weight:500;font-size:13px;margin-top:6px}
+
+/* ---- Prompt container with anchored cat ---- */
+.prompt-container{position:relative;margin-top:38px}
+#cat{position:absolute;top:-46px;left:0;z-index:10;width:72px;height:56px;pointer-events:none;transform-origin:36px 48px;will-change:transform}
+#cat .z{display:none;position:absolute;top:-14px;right:-4px;font-size:12px;color:var(--mut)}
+#cat.asleep .z{display:block;animation:z 2s infinite}
+@keyframes z{0%{transform:translateY(0);opacity:0}50%{opacity:1}100%{transform:translateY(-12px);opacity:0}}
+#cat .coin{display:none;position:absolute;left:-4px;top:-6px;font-size:16px}
+#cat.digging .coin{display:block;animation:coin 0.7s ease-out infinite}
+@keyframes coin{0%{transform:translateY(0) scale(0.8);opacity:1}100%{transform:translateY(-22px) scale(1.2);opacity:0}}
+@media(prefers-reduced-motion:reduce){#cat{animation:none!important}}
 </style></head><body>
-<header><h1>Preflight</h1><span class="chip" id="c1"></span><span class="chip" id="c2"></span>
-<button id="test">Test connection</button><span class="mut" id="testout"></span>
-<label style="margin-left:auto"><input type="checkbox" id="mem" checked style="width:auto"> Memory ON</label>
-<label><input type="checkbox" id="hidecat" style="width:auto"> Hide cat</label></header>
-<main><section>
+
+<!-- Header -->
+<header>
+  <h1>Preflight</h1>
+  <span class="chip" id="c1"></span>
+  <span class="chip" id="c2"></span>
+  <button id="test">Test connection</button>
+  <span class="mut" id="testout"></span>
+  <label style="margin-left:auto"><input type="checkbox" id="mem" checked style="width:auto"> Memory ON</label>
+  <label><input type="checkbox" id="hidecat" style="width:auto"> Hide cat</label>
+</header>
+
+<main>
+<section>
+
+<!-- Company history -->
 <div class="card"><b>Company history</b> <span class="mut" id="bank">Not loaded</span>
-<div class="row"><button id="seed">Load company history</button></div><div class="bar hide" id="prog"><i></i></div><div class="mut" id="progtxt"></div></div>
+<div class="row"><button id="seed">Load company history</button></div>
+<div class="bar hide" id="prog"><i></i></div><div class="mut" id="progtxt"></div></div>
+
+<!-- Tabs -->
 <nav id="tabs" style="margin-top:14px"></nav>
-<div id="t-pre"><textarea id="plan" rows="3" placeholder="Describe what you're about to do"></textarea>
-<div class="row"><button class="ex">Friday deploy of Billing API + 3 dependency updates</button><button class="ex">Migrate Service B's DB Saturday 2 AM</button><button class="ex">Roll out a new async queue for order events</button></div>
-<button class="p" id="run">Run preflight</button><div id="out"></div></div>
-<div id="t-his" class="hide"><input id="q" placeholder="e.g. What happened with the Orders DB migration?"><div class="row"><button class="p" id="ask">Ask history</button></div><div id="hout"></div></div>
-<div id="t-pat" class="hide"><button class="p" id="pat">What mistakes are we at risk of repeating?</button><div id="pout"></div></div>
-<div id="t-fb" class="hide"><button id="fbload">Load feedback log</button><div id="fbout"></div>
-<div class="card"><b>Add experience</b><textarea id="notes" rows="4" placeholder="Paste free-text notes about what happened"></textarea><div class="row"><button id="extract">Convert to lesson record</button></div><textarea id="rec" rows="6" class="hide"></textarea><div class="row"><button class="p hide" id="retainrec">Retain record</button></div><div id="addout"></div></div></div>
+
+<!-- ═══════ PREFLIGHT TAB ═══════ -->
+<div id="t-pre">
+  <!-- Flow indicator -->
+  <div class="flow" id="flow">
+    <span class="step active" data-step="1"><span class="num">1</span> Plan</span>
+    <span class="step-arrow">→</span>
+    <span class="step" data-step="2"><span class="num">2</span> Preflight</span>
+    <span class="step-arrow">→</span>
+    <span class="step" data-step="3"><span class="num">3</span> Review</span>
+    <span class="step-arrow">→</span>
+    <span class="step" data-step="4"><span class="num">4</span> Outcome</span>
+    <span class="step-arrow">→</span>
+    <span class="step" data-step="5"><span class="num">5</span> Remember</span>
+  </div>
+
+  <!-- Free-form input with anchored companion -->
+  <div class="prompt-container" id="prompt-container">
+    <div id="cat" class="idle">
+      <svg id="cat-svg" viewBox="0 0 72 56" width="72" height="56" style="overflow:visible">
+        <ellipse id="cat-shadow" cx="36" cy="52" rx="20" ry="3" fill="rgba(0,0,0,0.12)"/>
+        <g id="leg-rl" style="transform-origin:20px 40px"><rect x="18" y="38" width="5" height="13" rx="2.5" fill="#788291"/></g>
+        <g id="leg-fl" style="transform-origin:48px 40px"><rect x="46" y="38" width="5" height="13" rx="2.5" fill="#788291"/></g>
+        <g id="cat-tail" style="transform-origin:16px 38px"><path d="M16 38 C 8 36, 4 28, 8 20 C 9 18, 12 19, 11 22 C 8 27, 11 33, 17 36 Z" fill="#8b95a5"/></g>
+        <g id="cat-body" style="transform-origin:34px 38px">
+          <ellipse cx="34" cy="38" rx="19" ry="12" fill="#8b95a5"/>
+          <ellipse cx="36" cy="40" rx="12" ry="7" fill="#9ba6b6" opacity="0.6"/>
+        </g>
+        <g id="leg-rr" style="transform-origin:24px 40px"><rect x="22" y="38" width="5" height="13" rx="2.5" fill="#9aa5b5"/></g>
+        <g id="leg-fr" style="transform-origin:52px 40px"><rect x="50" y="38" width="5" height="13" rx="2.5" fill="#9aa5b5"/></g>
+        <g id="cat-head" style="transform-origin:50px 24px">
+          <circle cx="50" cy="24" r="12" fill="#a3adbb"/>
+          <polygon points="42,16 46,6 52,14" fill="#8b95a5"/>
+          <polygon points="44,15 47,8 51,13" fill="#fca5a5" opacity="0.7"/>
+          <polygon points="53,14 59,7 62,17" fill="#8b95a5"/>
+          <polygon points="54,14 58,9 61,16" fill="#fca5a5" opacity="0.7"/>
+          <g id="eyes">
+            <circle id="eye-l" cx="47" cy="23" r="2" fill="#1b2430"/>
+            <circle id="eye-r" cx="55" cy="23" r="2" fill="#1b2430"/>
+          </g>
+          <polygon points="51,26 53,26 52,27.5" fill="#e11d48"/>
+          <path d="M50 28 Q 52 29.5 54 28" stroke="#475569" stroke-width="0.8" fill="none"/>
+        </g>
+      </svg>
+      <span class="z">Zzz</span>
+      <span class="coin">🪙</span>
+    </div>
+    <textarea id="plan" rows="3" placeholder="Describe what you're about to do — e.g. &quot;Deploy the authentication service after changing OAuth token expiry settings&quot;"></textarea>
+  </div>
+  <div class="examples-label">Quick examples</div>
+  <div class="row">
+    <button class="ex">Friday deploy of Billing API + 3 dependency updates</button>
+    <button class="ex">Migrate Service B's DB Saturday 2 AM</button>
+    <button class="ex">Roll out a new async queue for order events</button>
+  </div>
+  <div class="row" style="margin-top:12px"><button class="p" id="run">Run preflight ▸</button></div>
+  <div id="out"></div>
+</div>
+
+<!-- ═══════ HISTORY TAB ═══════ -->
+<div id="t-his" class="hide">
+  <input id="q" placeholder="e.g. What happened with the Orders DB migration?">
+  <div class="row"><button class="p" id="ask">Ask history</button></div>
+  <div id="hout"></div>
+</div>
+
+<!-- ═══════ PATTERNS TAB ═══════ -->
+<div id="t-pat" class="hide">
+  <button class="p" id="pat">What mistakes are we at risk of repeating?</button>
+  <div id="pout"></div>
+</div>
+
+<!-- ═══════ FEEDBACK LOG TAB ═══════ -->
+<div id="t-fb" class="hide">
+  <button id="fbload">Load outcome history</button>
+  <div id="fbout"></div>
+  <div class="card">
+    <b>Add experience</b>
+    <textarea id="notes" rows="4" placeholder="Paste free-text notes about what happened"></textarea>
+    <div class="row"><button id="extract">Convert to lesson record</button></div>
+    <textarea id="rec" rows="6" class="hide"></textarea>
+    <div class="row"><button class="p hide" id="retainrec">Retain record</button></div>
+    <div id="addout"></div>
+  </div>
+</div>
+
 </section>
-<aside class="card" id="mem-panel" style="margin-top:0"><b>Memory panel</b><div id="memout" class="mut">Nothing recalled yet.</div></aside></main>
-<div id="cat" class="idle"><svg viewBox="0 0 64 56" width="64" height="56"><ellipse cx="32" cy="38" rx="20" ry="14" fill="#8b95a5"/><circle cx="32" cy="22" r="14" fill="#a3adbb"/><path d="M20 12l3-10 8 7zM44 12l-3-10-8 7z" fill="#a3adbb"/><g id="eyes"><circle cx="26" cy="21" r="2" fill="#1b2430"/><circle cx="38" cy="21" r="2" fill="#1b2430"/></g><path d="M30 27q2 2 4 0" stroke="#1b2430" fill="none"/></svg><span class="z">Zzz</span><span class="coin">🪙</span></div>
+
+<!-- Memory panel sidebar -->
+<aside class="card" id="mem-panel" style="margin-top:0"><b>Memory panel</b><div id="memout" class="mut">Nothing recalled yet.</div></aside>
+</main>
+
+
+
 <script>
-const $=id=>document.getElementById(id);let cfg={},last=null,lastPlan="",catAway=60;
-const esc=s=>String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-async function api(p,b){const r=await fetch("/api/"+p,{method:p==="status"?"GET":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b||{})});const j=await r.json();if(!r.ok)throw new Error(j.error||r.statusText);return j}
-const err=(el,e,retry)=>{el.innerHTML=`<div class="err">${esc(e.message)} ${retry?'<button id="retry">Retry</button>':''}</div>`;if(retry)$("retry").onclick=retry};
-/* ---- cat state machine (decoration only) ---- */
-const cat={s:"idle",away:0,set(s){if($("hidecat").checked)return;this.s=s;$("cat").className=s;$("eyes").style.opacity=s==="asleep"?0:1},};
-const useCatMood=cat;$("hidecat").onchange=()=>{$("cat").style.display=$("hidecat").checked?"none":"block"};
-document.addEventListener("visibilitychange",()=>{if(document.hidden){cat.away=Date.now();cat.set("asleep")}else{const t=(Date.now()-cat.away)/1000;cat.set(t>=catAway?"clingy":"idle")}});
-["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(cat.s==="clingy"){cat.set("idle")}}));
-function catCall(){cat.set("running");const t1=setTimeout(()=>cat.set("rolling"),1200);return{search(){cat.set("digging")},done(){clearTimeout(t1);cat.set("falling");setTimeout(()=>cat.set("idle"),1200)}}}
-/* ---- status ---- */
-async function status(){cfg=await api("status");catAway=cfg.catAwayThreshold;
-$("c1").textContent=`Hindsight ${cfg.hindsightConfigured?"✓ …"+cfg.hindsightKeyTail:"✗"} · ${cfg.bankId}`;
-$("c2").textContent=`Groq ${cfg.groqConfigured?"✓ …"+cfg.groqKeyTail:"✗"}`}
-$("test").onclick=async()=>{$("testout").textContent="Testing…";try{const r=await api("test");$("testout").textContent=`OK ${r.latencyMs} ms`}catch(e){$("testout").textContent="Failed: "+e.message}};
-/* ---- tabs ---- */
-const tabs=[["pre","Preflight"],["his","Ask History"],["pat","Patterns"],["fb","Feedback log"]];
-$("tabs").innerHTML=tabs.map(([k,n])=>`<button data-k="${k}" class="${k==="pre"?"on":""}">${n}</button>`).join("");
-$("tabs").onclick=e=>{const k=e.target.dataset.k;if(!k)return;tabs.forEach(([x])=>$("t-"+x).classList.toggle("hide",x!==k));[...$("tabs").children].forEach(b=>b.classList.toggle("on",b.dataset.k===k))};
-/* ---- seed + indexing ---- */
-$("seed").onclick=async()=>{if(!confirm("Retain the Helix Freight history into the memory bank?"))return;
-$("seed").disabled=true;$("prog").classList.remove("hide");const bar=$("prog").firstChild;bar.style.width="10%";$("progtxt").textContent="Retaining lesson records…";
-try{const s=await api("seed");bar.style.width="40%";const t0=Date.now(),lim=cfg.indexingTimeout*1000;
-while(true){const r=await api("indexing");const el=Date.now()-t0;bar.style.width=Math.min(95,40+55*el/lim)+"%";$("progtxt").textContent=`Indexing… ${Math.round(el/1000)}s`;
-if(r.ready){bar.style.width="100%";$("bank").textContent=`Memory bank status: ${s.retained} records retained`;$("progtxt").textContent="Ready.";break}
-if(el>lim)throw new Error("Indexing timed out; records may still become recallable shortly.");await new Promise(r=>setTimeout(r,5000))}}
-catch(e){err($("progtxt"),e)}$("seed").disabled=false};
-/* ---- preflight ---- */
-document.querySelectorAll(".ex").forEach(b=>b.onclick=()=>{$("plan").value=b.textContent});
-function memPanel(m){if(!m){$("memout").textContent="Memory OFF: no recall performed.";return}
-$("memout").innerHTML=`<div class="mut">${m.latencyMs} ms · ${m.merged.length} unique memories</div>`+m.queries.map(q=>`<div><b>Query:</b> ${esc(q.query)}<pre>${esc(q.results.join("\n---\n")||"(none)")}</pre></div>`).join("")}
-$("run").onclick=async function go(){const plan=$("plan").value.trim();if(!plan)return;lastPlan=plan;$("out").innerHTML='<div class="card">Checking…</div>';
-const c=catCall();const memOn=$("mem").checked;if(memOn)c.search();
-try{const r=await api("preflight",{plan,memory:memOn});last=r;
-if(!r.memoryUsed){$("out").innerHTML=`<div class="card"><span class="chip">${r.label}</span><p>${esc(r.answer)}</p></div>`;memPanel(null)}
-else{const v=r.verdict;$("out").innerHTML=`<div class="card verdict ${v.verdict}"><h2>${v.verdict}</h2><p>${esc(v.summary)}</p><div class="mut" style="color:#fff">Confidence ${esc(v.confidence)} · ${esc(v.caveat)}</div></div>
-<div class="card"><b>Cited events</b>${(v.matched_lessons||[]).map(m=>`<p><b>${esc(m.event_id)}</b> ${esc(m.why_it_matches)}<br><span class="mut">Matches: ${esc((m.matching_conditions||[]).join(", "))} · Differences: ${esc(m.key_differences)}</span></p>`).join("")||"<p class='mut'>None</p>"}
-<b>Counter-evidence</b>${(v.counter_evidence||[]).map(m=>`<p><b>${esc(m.event_id)}</b> ${esc(m.note)}</p>`).join("")||"<p class='mut'>None</p>"}
-<b>Recommended actions</b><ul>${(v.recommended_actions||[]).map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
-<div class="card"><b>Did you act on this?</b><div class="row"><button data-a="We changed the plan">We changed the plan</button><button data-a="We're proceeding anyway">We're proceeding anyway</button></div><div id="fb2"></div></div>`;
-memPanel(r.memory);
-$("out").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>outcome(b.dataset.a))}}
-catch(e){err($("out"),e,go)}c.done()};
-const cited=()=>((last?.verdict?.matched_lessons)||[]).map(m=>m.event_id);
-async function outcome(action){try{await api("outcome",{plan:lastPlan,verdict:last.verdict.verdict,cited:cited(),action});
-$("fb2").innerHTML=`<p class="mut">Recorded: ${esc(action)}. Later, how did it go?</p><input id="fnote" placeholder="Note (optional)"><div class="row"><button id="ok">It went fine</button><button id="bad">It failed</button></div>`;
-const done=async res=>{try{await api("outcome",{plan:lastPlan,verdict:last.verdict.verdict,cited:cited(),action,result:res,note:$("fnote").value});$("fb2").innerHTML=`<p class="mut">Recorded result: ${res}. Future checks will use it.</p>`}catch(e){err($("fb2"),e)}};
-$("ok").onclick=()=>done("It went fine");$("bad").onclick=()=>done("It failed")}catch(e){err($("fb2"),e)}}
-/* ---- history / patterns / feedback / add ---- */
-$("ask").onclick=async function go(){const question=$("q").value.trim();if(!question)return;$("hout").innerHTML='<div class="card">Searching memory…</div>';const c=catCall();c.search();
-try{const r=await api("history",{question});$("hout").innerHTML=`<div class="card"><div style="white-space:pre-wrap">${esc(r.answer)}</div></div>`;memPanel(r.memory)}catch(e){err($("hout"),e,go)}c.done()};
-$("pat").onclick=async function go(){$("pout").innerHTML='<div class="card">Analyzing memory…</div>';const c=catCall();c.search();
-try{const r=await api("patterns");$("pout").innerHTML=`<p class="mut">Path used: ${esc(r.path)}</p>`+(r.patterns||[]).map(p=>`<div class="card"><b>${esc(p.title)}</b><div class="mut">Events: ${esc((p.event_ids||[]).join(", "))} · Failures: ${esc(p.failure_count)}</div><p>${esc(p.preventive_rule)}</p></div>`).join("");if(r.memory)memPanel(r.memory)}catch(e){err($("pout"),e,go)}c.done()};
-$("fbload").onclick=async()=>{$("fbout").innerHTML="Loading…";try{const r=await api("outcomes");$("fbout").innerHTML=r.items.map(t=>`<pre>${esc(t)}</pre>`).join("")||'<p class="mut">No outcomes recorded yet. Mark a verdict on the Preflight tab.</p>'}catch(e){err($("fbout"),e)}};
-$("extract").onclick=async()=>{try{const r=await api("extract-lesson",{notes:$("notes").value});$("rec").value=r.record;$("rec").classList.remove("hide");$("retainrec").classList.remove("hide")}catch(e){err($("addout"),e)}};
-$("retainrec").onclick=async()=>{try{await api("retain-record",{record:$("rec").value});$("addout").innerHTML='<p class="mut">Retained. It may take a moment to become recallable.</p>'}catch(e){err($("addout"),e)}};
+/* ============================================================
+   Preflight × Hindsight — Frontend
+   All API calls preserved exactly as original.
+   ============================================================ */
+const $ = id => document.getElementById(id);
+let cfg = {}, last = null, lastPlan = "", catAway = 60;
+let lastAction = "", lastResult = "", lastNote = "";
+
+const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]));
+
+async function api(p, b) {
+  const r = await fetch("/api/" + p, {
+    method: p === "status" ? "GET" : "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(b || {})
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+
+const err = (el, e, retry) => {
+  el.innerHTML = `<div class="err">${esc(e.message)} ${retry ? '<button id="retry">Retry</button>' : ''}</div>`;
+  if (retry) $("retry").onclick = retry;
+};
+
+/* ---- Flow step indicator ---- */
+function setStep(n) {
+  document.querySelectorAll('.step').forEach(el => {
+    const s = Number(el.dataset.step);
+    el.classList.toggle('done', s < n);
+    el.classList.toggle('active', s === n);
+  });
+}
+
+/* ---- Cat procedural physics & state machine ---- */
+const catPhys = {
+  x: 0,
+  y: 0,
+  vx: 0,
+  vy: 0,
+  rot: 0,
+  vRot: 0,
+  facing: -1,
+  walkPhase: 0,
+  idlePhase: 0,
+  digPhase: 0,
+  settleT: 0,
+  initialized: false
+};
+
+function getPromptBounds() {
+  const wrap = $("prompt-container");
+  const w = wrap ? (wrap.clientWidth || 500) : 500;
+  return { minX: 8, maxX: Math.max(70, w - 80), width: w };
+}
+
+const cat = {
+  s: "idle", away: 0,
+  set(s) {
+    if ($("hidecat").checked) return;
+    this.s = s;
+    const catEl = $("cat");
+    if (catEl) catEl.className = s;
+    const eyes = $("eyes");
+    if (eyes) eyes.style.opacity = s === "asleep" ? "0" : "1";
+
+    if (s === "running") {
+      catPhys.facing = -1;
+      catPhys.rot = 0;
+      catPhys.y = 0;
+      catPhys.vy = 0;
+      catPhys.settleT = 0;
+    } else if (s === "rolling") {
+      if (Math.abs(catPhys.vx) < 60) catPhys.vx = catPhys.facing * 160;
+    } else if (s === "falling") {
+      catPhys.vy = -130;
+      catPhys.vx = catPhys.facing * 50;
+      catPhys.vRot = catPhys.facing * 6;
+      catPhys.settleT = 0;
+    } else if (s === "idle") {
+      catPhys.y = 0;
+      catPhys.vy = 0;
+      catPhys.vx = 0;
+      catPhys.rot = 0;
+      catPhys.vRot = 0;
+    } else if (s === "asleep") {
+      catPhys.vx = 0;
+      catPhys.vy = 0;
+      catPhys.rot = 0;
+    }
+  },
+};
+const useCatMood = cat;
+$("hidecat").onchange = () => { $("cat").style.display = $("hidecat").checked ? "none" : "block"; };
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { cat.away = Date.now(); cat.set("asleep"); }
+  else { const t = (Date.now() - cat.away) / 1000; cat.set(t >= catAway ? "clingy" : "idle"); }
+});
+["pointerdown", "keydown"].forEach(ev => document.addEventListener(ev, () => { if (cat.s === "clingy") cat.set("idle"); }));
+
+function catCall() {
+  cat.set("running");
+  const t1 = setTimeout(() => cat.set("rolling"), 1300);
+  return {
+    search() { cat.set("digging"); },
+    done() {
+      clearTimeout(t1);
+      cat.set("falling");
+      setTimeout(() => cat.set("idle"), 1400);
+    }
+  };
+}
+
+/* ---- Procedural Animation Loop ---- */
+let lastFrameTime = performance.now();
+function runCatLoop(now) {
+  const dt = Math.min((now - lastFrameTime) / 1000, 0.05);
+  lastFrameTime = now;
+
+  const bounds = getPromptBounds();
+  if (!catPhys.initialized && bounds.width > 100) {
+    catPhys.x = bounds.maxX - 16;
+    catPhys.initialized = true;
+  }
+
+  let rotFL = 0, rotFR = 0, rotRL = 0, rotRR = 0;
+  let liftFL = 0, liftFR = 0;
+  let bodyY = 0, bodyPitch = 0, headRot = 0, headY = 0, tailRot = 0;
+  let shadowOpacity = 0.12;
+
+  const s = cat.s;
+
+  if (s === "running") {
+    const targetVx = catPhys.facing * 155;
+    catPhys.vx += (targetVx - catPhys.vx) * Math.min(1, dt * 6);
+    catPhys.x += catPhys.vx * dt;
+
+    if (catPhys.x <= bounds.minX) {
+      catPhys.x = bounds.minX;
+      catPhys.facing = 1;
+      catPhys.vx *= -0.3;
+    } else if (catPhys.x >= bounds.maxX) {
+      catPhys.x = bounds.maxX;
+      catPhys.facing = -1;
+      catPhys.vx *= -0.3;
+    }
+
+    const stepSpeed = Math.abs(catPhys.vx) * 0.085;
+    catPhys.walkPhase += stepSpeed * dt * 60;
+    const p = catPhys.walkPhase;
+
+    // Natural alternating quadruped stride
+    rotFR = Math.sin(p) * 30;
+    rotFL = Math.sin(p + Math.PI) * 30;
+    rotRL = Math.sin(p + Math.PI * 0.65) * 26;
+    rotRR = Math.sin(p + Math.PI * 1.65) * 26;
+
+    // Paw lift off the ledge during swing
+    liftFR = Math.max(0, -Math.sin(p)) * 4.5;
+    liftFL = Math.max(0, -Math.sin(p + Math.PI)) * 4.5;
+
+    // Torso follows legs with double-frequency bounce and pitch
+    bodyY = -Math.abs(Math.sin(p * 2)) * 3;
+    bodyPitch = Math.sin(p * 2) * 2.8;
+
+    // Head follows with subtle phase lag
+    headY = Math.sin(p * 2 - 0.4) * 1.8;
+    headRot = -Math.sin(p) * 2.2;
+    tailRot = Math.sin(p * 0.8) * 15 - 8;
+
+  } else if (s === "rolling") {
+    const radius = 20;
+    catPhys.vx *= Math.pow(0.965, dt * 60);
+    catPhys.x += catPhys.vx * dt;
+
+    if (catPhys.x <= bounds.minX) {
+      catPhys.x = bounds.minX;
+      catPhys.vx = -catPhys.vx * 0.7;
+    } else if (catPhys.x >= bounds.maxX) {
+      catPhys.x = bounds.maxX;
+      catPhys.vx = -catPhys.vx * 0.7;
+    }
+
+    // Direct physical coupling between movement and rotation
+    catPhys.rot += (catPhys.vx * dt) / radius;
+
+    // Curled tuck
+    rotFL = -42; rotFR = -42;
+    rotRL = 42; rotRR = 42;
+    bodyY = 2;
+    headRot = 20;
+    tailRot = 45;
+
+  } else if (s === "falling") {
+    const g = 650;
+    catPhys.vy += g * dt;
+    catPhys.y += catPhys.vy * dt;
+    catPhys.x += catPhys.vx * dt;
+    catPhys.rot += catPhys.vRot * dt;
+
+    if (catPhys.y >= 0) {
+      catPhys.y = 0;
+      if (Math.abs(catPhys.vy) > 40) {
+        catPhys.vy = -catPhys.vy * 0.32;
+        catPhys.vx *= 0.6;
+        catPhys.vRot *= -0.4;
+        catPhys.rot *= 0.5;
+      } else {
+        catPhys.vy = 0;
+        catPhys.vx = 0;
+        catPhys.vRot = 0;
+        catPhys.rot = 0;
+        catPhys.settleT = 0.35;
+        cat.set("idle");
+      }
+    }
+
+    rotFL = 16; rotFR = 12;
+    rotRL = -14; rotRR = -10;
+    tailRot = -25;
+    shadowOpacity = Math.max(0.04, 0.12 * (1 - Math.abs(catPhys.y) / 50));
+
+  } else if (s === "digging") {
+    catPhys.digPhase += dt * 26;
+    const dp = catPhys.digPhase;
+    rotFL = Math.sin(dp) * 38;
+    rotFR = Math.sin(dp + Math.PI) * 38;
+    rotRL = 8; rotRR = 8;
+    bodyY = Math.abs(Math.sin(dp)) * 3;
+    headY = 2;
+    tailRot = Math.sin(dp * 1.5) * 18;
+
+  } else if (s === "clingy") {
+    const targetX = (bounds.minX + bounds.maxX) * 0.5;
+    catPhys.x += (targetX - catPhys.x) * Math.min(1, dt * 3.5);
+    catPhys.y = 2;
+    bodyY = 2;
+    headRot = 10;
+    tailRot = 14;
+
+  } else if (s === "asleep") {
+    catPhys.idlePhase += dt * 1.4;
+    bodyY = 3.5 + Math.sin(catPhys.idlePhase) * 1.2;
+    rotFL = 36; rotFR = 36;
+    rotRL = -36; rotRR = -36;
+    headY = 3;
+    tailRot = 20;
+
+  } else {
+    catPhys.idlePhase += dt * 2.4;
+    const ip = catPhys.idlePhase;
+
+    if (catPhys.settleT > 0) {
+      catPhys.settleT -= dt;
+      const factor = Math.max(0, catPhys.settleT / 0.35);
+      bodyY = Math.sin(catPhys.settleT * 35) * 3.5 * factor;
+    } else {
+      bodyY = Math.sin(ip) * 1.2;
+      headY = Math.sin(ip * 0.8) * 0.8;
+      tailRot = Math.sin(ip * 0.6) * 8;
+    }
+  }
+
+  const catEl = $("cat");
+  if (catEl) {
+    catEl.style.transform = `translate3d(${catPhys.x}px, ${catPhys.y}px, 0) scaleX(${catPhys.facing}) rotate(${catPhys.rot}rad)`;
+  }
+  const legfl = $("leg-fl"), legfr = $("leg-fr"), legrl = $("leg-rl"), legrr = $("leg-rr");
+  const cb = $("cat-body"), ch = $("cat-head"), ct = $("cat-tail"), cs = $("cat-shadow");
+  if (legfl) legfl.style.transform = `rotate(${rotFL}deg) translateY(${liftFL}px)`;
+  if (legfr) legfr.style.transform = `rotate(${rotFR}deg) translateY(${liftFR}px)`;
+  if (legrl) legrl.style.transform = `rotate(${rotRL}deg)`;
+  if (legrr) legrr.style.transform = `rotate(${rotRR}deg)`;
+  if (cb) cb.style.transform = `translateY(${bodyY}px) rotate(${bodyPitch}deg)`;
+  if (ch) ch.style.transform = `translateY(${headY}px) rotate(${headRot}deg)`;
+  if (ct) ct.style.transform = `rotate(${tailRot}deg)`;
+  if (cs) cs.style.fill = `rgba(0,0,0,${shadowOpacity})`;
+
+  requestAnimationFrame(runCatLoop);
+}
+requestAnimationFrame(runCatLoop);
+
+/* ---- Status ---- */
+async function status() {
+  cfg = await api("status");
+  catAway = cfg.catAwayThreshold;
+  $("c1").textContent = `Hindsight ${cfg.hindsightConfigured ? "✓ …" + cfg.hindsightKeyTail : "✗"} · ${cfg.bankId}`;
+  $("c2").textContent = `Groq ${cfg.groqConfigured ? "✓ …" + cfg.groqKeyTail : "✗"}`;
+}
+$("test").onclick = async () => {
+  $("testout").textContent = "Testing…";
+  try { const r = await api("test"); $("testout").textContent = `OK ${r.latencyMs} ms`; }
+  catch (e) { $("testout").textContent = "Failed: " + e.message; }
+};
+
+/* ---- Tabs ---- */
+const tabs = [["pre", "Preflight"], ["his", "Ask History"], ["pat", "Patterns"], ["fb", "Feedback Log"]];
+$("tabs").innerHTML = tabs.map(([k, n]) => `<button data-k="${k}" class="${k === "pre" ? "on" : ""}">${n}</button>`).join("");
+$("tabs").onclick = e => {
+  const k = e.target.dataset.k;
+  if (!k) return;
+  tabs.forEach(([x]) => $("t-" + x).classList.toggle("hide", x !== k));
+  [...$("tabs").children].forEach(b => b.classList.toggle("on", b.dataset.k === k));
+};
+
+/* ---- Seed + indexing (preserved exactly) ---- */
+$("seed").onclick = async () => {
+  if (!confirm("Retain the Helix Freight history into the memory bank?")) return;
+  $("seed").disabled = true;
+  $("prog").classList.remove("hide");
+  const bar = $("prog").firstChild;
+  bar.style.width = "10%";
+  $("progtxt").textContent = "Retaining lesson records…";
+  try {
+    const s = await api("seed");
+    bar.style.width = "40%";
+    const t0 = Date.now(), lim = cfg.indexingTimeout * 1000;
+    while (true) {
+      const r = await api("indexing");
+      const el = Date.now() - t0;
+      bar.style.width = Math.min(95, 40 + 55 * el / lim) + "%";
+      $("progtxt").textContent = `Indexing… ${Math.round(el / 1000)}s`;
+      if (r.ready) {
+        bar.style.width = "100%";
+        $("bank").textContent = `Memory bank status: ${s.retained} records retained`;
+        $("progtxt").textContent = "Ready.";
+        break;
+      }
+      if (el > lim) throw new Error("Indexing timed out; records may still become recallable shortly.");
+      await new Promise(r => setTimeout(r, 5000));
+    }
+  } catch (e) { err($("progtxt"), e); }
+  $("seed").disabled = false;
+};
+
+/* ---- Preflight ---- */
+document.querySelectorAll(".ex").forEach(b => b.onclick = () => { $("plan").value = b.textContent; });
+
+function memPanel(m) {
+  if (!m) { $("memout").textContent = "Memory OFF: no recall performed."; return; }
+  $("memout").innerHTML =
+    `<div class="mut">${m.latencyMs} ms · ${m.merged.length} unique memories</div>` +
+    m.queries.map(q =>
+      `<div><b>Query:</b> ${esc(q.query)}<pre>${esc(q.results.join("\n---\n") || "(none)")}</pre></div>`
+    ).join("");
+}
+
+$("run").onclick = async function go() {
+  const plan = $("plan").value.trim();
+  if (!plan) return;
+  lastPlan = plan;
+  $("out").innerHTML = '<div class="card">Checking…</div>';
+  setStep(2);
+  const c = catCall();
+  const memOn = $("mem").checked;
+  if (memOn) c.search();
+  try {
+    const r = await api("preflight", { plan, memory: memOn });
+    last = r;
+    setStep(3);
+    if (!r.memoryUsed) {
+      $("out").innerHTML = `<div class="card"><span class="chip">${r.label}</span><p>${esc(r.answer)}</p></div>`;
+      memPanel(null);
+    } else {
+      const v = r.verdict;
+      $("out").innerHTML =
+        `<div class="card verdict ${v.verdict}"><h2>${v.verdict}</h2><p>${esc(v.summary)}</p>` +
+        `<div class="mut" style="color:#fff">Confidence ${esc(v.confidence)} · ${esc(v.caveat)}</div></div>` +
+
+        `<div class="card"><b>Cited events</b>` +
+        ((v.matched_lessons || []).map(m =>
+          `<p><b>${esc(m.event_id)}</b> ${esc(m.why_it_matches)}<br>` +
+          `<span class="mut">Matches: ${esc((m.matching_conditions || []).join(", "))} · Differences: ${esc(m.key_differences)}</span></p>`
+        ).join("") || '<p class="mut">None</p>') +
+        `<b>Counter-evidence</b>` +
+        ((v.counter_evidence || []).map(m =>
+          `<p><b>${esc(m.event_id)}</b> ${esc(m.note)}</p>`
+        ).join("") || '<p class="mut">None</p>') +
+        `<b>Recommended actions</b><ul>` +
+        (v.recommended_actions || []).map(a => `<li>${esc(a)}</li>`).join("") +
+        `</ul></div>` +
+
+        `<div class="card"><b>Did you act on this?</b>` +
+        `<div class="row">` +
+        `<button data-a="We changed the plan">We changed the plan</button>` +
+        `<button data-a="We're proceeding anyway">We're proceeding anyway</button>` +
+        `</div><div id="fb2"></div></div>`;
+      memPanel(r.memory);
+      $("out").querySelectorAll("[data-a]").forEach(b => b.onclick = () => outcome(b.dataset.a));
+    }
+  } catch (e) { err($("out"), e, go); }
+  c.done();
+};
+
+const cited = () => ((last?.verdict?.matched_lessons) || []).map(m => m.event_id);
+
+async function outcome(action) {
+  try {
+    await api("outcome", { plan: lastPlan, verdict: last.verdict.verdict, cited: cited(), action });
+    setStep(4);
+    $("fb2").innerHTML =
+      `<p class="mut">Recorded: ${esc(action)}. How did it go?</p>` +
+      `<input id="fnote" placeholder="Optional — describe what happened">` +
+      `<div class="row" style="margin-top:8px">` +
+      `<button class="obtn obtn-ok" id="ok">✓ Worked as expected</button>` +
+      `<button class="obtn obtn-partial" id="partial">⚠ Partially successful</button>` +
+      `<button class="obtn obtn-fail" id="bad">✗ Failed</button>` +
+      `</div>`;
+
+    const done = async (res) => {
+      try {
+        const note = $("fnote").value;
+        await api("outcome", { plan: lastPlan, verdict: last.verdict.verdict, cited: cited(), action, result: res, note });
+        lastAction = action;
+        lastResult = res;
+        lastNote = note;
+        setStep(5);
+        $("fb2").innerHTML =
+          `<p class="mut">✓ Recorded: <b>${esc(res)}</b>${note ? " — " + esc(note) : ""}</p>` +
+          `<button class="remember-btn" id="rememberBtn">💡 Remember this lesson</button>` +
+          `<div id="rememberOut"></div>`;
+        $("rememberBtn").onclick = rememberLesson;
+      } catch (e) { err($("fb2"), e); }
+    };
+
+    $("ok").onclick = () => done("Worked as expected");
+    $("partial").onclick = () => done("Partially successful");
+    $("bad").onclick = () => done("Failed");
+  } catch (e) { err($("fb2"), e); }
+}
+
+/* ---- Remember this lesson (reuses /api/extract-lesson + /api/retain-record) ---- */
+async function rememberLesson() {
+  const context =
+    `Plan: ${lastPlan}\nVerdict: ${last.verdict.verdict}\n` +
+    `Action taken: ${lastAction}\nResult: ${lastResult}\n` +
+    `Note: ${lastNote || "none"}\nDate: ${new Date().toISOString().slice(0, 10)}`;
+  $("rememberOut").innerHTML = '<div class="card">Extracting lesson from this experience…</div>';
+  try {
+    const r = await api("extract-lesson", { notes: context });
+    $("rememberOut").innerHTML =
+      `<div class="card">` +
+      `<b>Generated lesson record</b> <span class="mut">Review and edit if needed</span>` +
+      `<textarea id="lessonRec" rows="5" style="margin-top:8px">${esc(r.record)}</textarea>` +
+      `<div class="row"><button class="p" id="confirmRetain">✓ Save to organizational memory</button></div>` +
+      `<div id="retainResult"></div></div>`;
+    $("confirmRetain").onclick = async () => {
+      try {
+        await api("retain-record", { record: $("lessonRec").value });
+        $("retainResult").innerHTML = '<div class="saved-badge">✓ Saved — future preflights will benefit from this lesson</div>';
+      } catch (e) { err($("retainResult"), e); }
+    };
+  } catch (e) { err($("rememberOut"), e); }
+}
+
+/* ---- Ask History (preserved) ---- */
+$("ask").onclick = async function go() {
+  const question = $("q").value.trim();
+  if (!question) return;
+  $("hout").innerHTML = '<div class="card">Searching memory…</div>';
+  const c = catCall(); c.search();
+  try {
+    const r = await api("history", { question });
+    $("hout").innerHTML = `<div class="card"><div style="white-space:pre-wrap">${esc(r.answer)}</div></div>`;
+    memPanel(r.memory);
+  } catch (e) { err($("hout"), e, go); }
+  c.done();
+};
+
+/* ---- Patterns (preserved) ---- */
+$("pat").onclick = async function go() {
+  $("pout").innerHTML = '<div class="card">Analyzing memory…</div>';
+  const c = catCall(); c.search();
+  try {
+    const r = await api("patterns");
+    $("pout").innerHTML =
+      `<p class="mut">Path used: ${esc(r.path)}</p>` +
+      (r.patterns || []).map(p =>
+        `<div class="card"><b>${esc(p.title)}</b>` +
+        `<div class="mut">Events: ${esc((p.event_ids || []).join(", "))} · Failures: ${esc(p.failure_count)}</div>` +
+        `<p>${esc(p.preventive_rule)}</p></div>`
+      ).join("");
+    if (r.memory) memPanel(r.memory);
+  } catch (e) { err($("pout"), e, go); }
+  c.done();
+};
+
+/* ---- Feedback Log (enhanced: parsed history cards) ---- */
+function parseOutcome(raw) {
+  const parts = {};
+  raw.split(" | ").forEach(part => {
+    const idx = part.indexOf(": ");
+    if (idx === -1) return;
+    const key = part.slice(0, idx).trim().toLowerCase();
+    if (key === "preflight outcome") return;
+    parts[key] = part.slice(idx + 2).trim();
+  });
+  return parts;
+}
+
+$("fbload").onclick = async () => {
+  $("fbout").innerHTML = "Loading…";
+  try {
+    const r = await api("outcomes");
+    if (!r.items.length) {
+      $("fbout").innerHTML = '<p class="mut">No outcomes recorded yet. Run a preflight and record an outcome first.</p>';
+      return;
+    }
+    $("fbout").innerHTML = r.items.map(t => {
+      const p = parseOutcome(t);
+      const vc = (p.verdict || "").toUpperCase();
+      return `<div class="card history-card">` +
+        `<div class="history-header">` +
+        `<span class="verdict-badge ${vc}">${esc(p.verdict || "N/A")}</span>` +
+        `<span class="mut">${esc(p.date || "No date")}</span>` +
+        `</div>` +
+        `<div><b>Plan:</b> ${esc(p.plan || "N/A")}</div>` +
+        (p.cited && p.cited !== "none" ? `<div class="mut">Cited events: ${esc(p.cited)}</div>` : "") +
+        `<div class="history-details">` +
+        (p.action ? `<span><b>Action:</b> ${esc(p.action)}</span>` : "") +
+        (p.result ? `<span><b>Result:</b> ${esc(p.result)}</span>` : "") +
+        `</div>` +
+        (p.note ? `<div class="mut"><b>Note:</b> ${esc(p.note)}</div>` : "") +
+        `</div>`;
+    }).join("");
+  } catch (e) { err($("fbout"), e); }
+};
+
+/* ---- Add experience (preserved) ---- */
+$("extract").onclick = async () => {
+  try {
+    const r = await api("extract-lesson", { notes: $("notes").value });
+    $("rec").value = r.record;
+    $("rec").classList.remove("hide");
+    $("retainrec").classList.remove("hide");
+  } catch (e) { err($("addout"), e); }
+};
+$("retainrec").onclick = async () => {
+  try {
+    await api("retain-record", { record: $("rec").value });
+    $("addout").innerHTML = '<p class="mut">Retained. It may take a moment to become recallable.</p>';
+  } catch (e) { err($("addout"), e); }
+};
+
+/* ---- Init ---- */
 status();
+setStep(1);
 </script></body></html>
